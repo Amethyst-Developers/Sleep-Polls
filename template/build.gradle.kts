@@ -21,6 +21,10 @@ dependencies {
   compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
   paperLibrary("com.google.code.gson", "gson", "2.13.1")
 
+  var lampVer = "4.0.0-rc.12"
+  implementation("io.github.revxrsal:lamp.common:$lampVer")
+  implementation("io.github.revxrsal:lamp.bukkit:$lampVer")
+
 }
 
 java {
@@ -31,14 +35,14 @@ java {
 
 // paper-plugin.yml
 paper {
-  name = "MyPlugin"
+  name = "Sleep-Polls"
   version = "1.0.0"
   description = "My first plugin"
 
   main = "org.amethystdev.Main"
-  prefix = "MyPlugin"
+  prefix = "SleepPolls"
   apiVersion = "1.21"
-  authors = listOf("Phrut", "greenlantern456")
+  authors = listOf("Phrut", "NichuNaizam","The Amethyst Team")
 
   // Plugin bootstrapper/loader
   bootstrapper = "org.amethystdev.Bootstrapper"
