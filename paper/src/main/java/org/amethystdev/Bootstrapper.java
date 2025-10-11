@@ -9,7 +9,7 @@ import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 public class Bootstrapper implements PluginBootstrap {
     @Override
     public void bootstrap(BootstrapContext context) {
-
+        
     }
 
     @Override

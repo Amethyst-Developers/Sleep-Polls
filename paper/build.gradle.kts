@@ -37,12 +37,12 @@ java {
 paper {
   name = "Sleep-Polls"
   version = "1.0.0"
-  description = "My first plugin"
+  description = "A one player sleep plugin with polls"
 
   main = "org.amethystdev.Main"
   prefix = "SleepPolls"
   apiVersion = "1.21"
-  authors = listOf("Phrut", "NichuNaizam","The Amethyst Team")
+  authors = listOf("Phrut", "NichuNaizam", "The Amethyst Team")
 
   // Plugin bootstrapper/loader
   bootstrapper = "org.amethystdev.Bootstrapper"
@@ -95,10 +95,6 @@ tasks {
 
       // Hangar
       hangar("PlaceholderAPI", "2.11.6")
-
-      // luckperms
-      url("https://download.luckperms.net/1595/bukkit/loader/LuckPerms-Bukkit-5.5.10.jar")
-
     }
   }
 }
