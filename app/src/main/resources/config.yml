@@ -1,0 +1,111 @@
+# ============================================================
+#   _____ _                     _____      _ _
+#  / ____| |                   |  __ \    | | |
+# | (___ | | ___  ___ _ __     | |__) |__ | | |___
+#  \___ \| |/ _ \/ _ \ '_ \    |  ___/ _ \| | / __|
+#  ____) | |  __/  __/ |_) |   | |  | (_) | | \__ \
+# |_____/|_|\___|\___| .__/    |_|   \___/|_|_|___/
+#                    | |
+#                    |_|
+#
+#                SleepPolls Configuration
+#                 Modern Sleep Voting
+# ============================================================
+#
+# Documentation:
+# https://github.com/Amethyst-Developers/Sleep-Polls
+#
+# After editing this file:
+# - Save the file
+# - Run: /sp reload
+#
+# ============================================================
+
+
+# ------------------------------------------------------------
+# Poll Settings
+# ------------------------------------------------------------
+
+# Duration of a sleep poll in seconds.
+#
+# Recommended:
+# 15 - Fast servers
+# 20 - Balanced
+# 30+ - Large SMPs
+poll-duration-seconds: 20
+
+# Percentage of YES votes required to skip the night.
+#
+# Examples:
+# 50 = Simple majority
+# 60 = Slightly stricter
+# 75 = Large consensus required
+required-percentage: 50
+
+
+# ------------------------------------------------------------
+# BossBar Settings
+# ------------------------------------------------------------
+
+bossbar:
+
+  # Enables the bossbar countdown display.
+  #
+  # Displays:
+  # - Remaining time
+  # - Required votes
+  # - Current YES votes
+  enabled: true
+
+
+# ------------------------------------------------------------
+# Sound Settings
+# ------------------------------------------------------------
+
+sounds:
+
+  # Enables all plugin sounds.
+  #
+  # Includes:
+  # - Poll start sound
+  # - Countdown sounds
+  # - Success/failure sounds
+  enabled: true
+
+
+# ------------------------------------------------------------
+# Weather Settings
+# ------------------------------------------------------------
+
+weather:
+
+  # Clears rain after a successful poll.
+  clear-rain: true
+
+  # Clears thunder after a successful poll.
+  clear-thunder: true
+
+
+# ------------------------------------------------------------
+# World Settings
+# ------------------------------------------------------------
+
+worlds:
+
+  # Worlds where sleep polls are DISABLED.
+  #
+  # Example:
+  # blacklist:
+  #   - lobby
+  #   - spawn
+  #   - minigames
+  blacklist:
+    - lobby
+    - minigames
+
+
+# ============================================================
+# End of configuration
+# This file is part of Sleep-Polls - https://github.com/Amethyst-Developers/Sleep-Polls
+# Copyright (C) 2026  Monk (Monish), The Amethyst Team and contributors
+# ============================================================
