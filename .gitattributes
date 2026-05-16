@@ -7,6 +7,9 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
+<<<<<<< HEAD
 # Binary files should be left untouched
 *.jar           binary
 
+=======
+>>>>>>> a5f3c15ca22b53c6c3bc377299f6a3b6a223a31f

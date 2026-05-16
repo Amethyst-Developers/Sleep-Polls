@@ -6,4 +6,7 @@
 # Ignore Gradle build output directory
 build
 run
+<<<<<<< HEAD
 tmp
+=======
+>>>>>>> a5f3c15ca22b53c6c3bc377299f6a3b6a223a31f

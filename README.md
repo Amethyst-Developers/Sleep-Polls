@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SleepPolls
 
 > A modern sleep voting system for Paper servers that transforms night-time gameplay with democratic polling.
@@ -385,3 +386,10 @@ Built with:
 Made with ❤️ for the Minecraft community
 
 </div>
+=======
+A template bukkit plugin for Amethyst.
+
+# Requirements
+- Java 21
+- Gradle 9.1.0+
+>>>>>>> a5f3c15ca22b53c6c3bc377299f6a3b6a223a31f
