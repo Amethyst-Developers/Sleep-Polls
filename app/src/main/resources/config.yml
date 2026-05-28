@@ -21,6 +21,7 @@
 #
 # ============================================================
 
+server-id: server-1
 
 # ------------------------------------------------------------
 # Poll Settings
@@ -102,6 +103,32 @@ worlds:
   blacklist:
     - lobby
     - minigames
+
+
+# ------------------------------------------------------------
+# Database Settings
+# ------------------------------------------------------------
+database:
+
+  type: SQLITE # Options: SQLITE, MARIADB (not MYSQL)
+
+  sqlite:
+    file: data.db
+
+  mariadb:
+    host: localhost
+    port: 3306
+    database: sleeppolls
+    username: root
+    password: password
+    pool-size: 10
+
+dragonfly:
+  enabled: false
+  host: localhost
+  port: 6379
+  password: ""
+  channel: sleeppolls
 
 
 # ============================================================
