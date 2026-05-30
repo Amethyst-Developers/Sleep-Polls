@@ -19,6 +19,7 @@
 package org.amethystdev.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface DatabaseManager {
 
@@ -26,7 +27,8 @@ public interface DatabaseManager {
 
     void disconnect();
 
-    Connection getConnection();
+    Connection getConnection()
+            throws SQLException;
 
     boolean isConnected();
 }

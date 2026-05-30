@@ -168,7 +168,7 @@ public final class SleepListener implements Listener {
                 .collect(Collectors.toSet());
 
         // Minimum players check
-        if (voters.size() < 1) {
+        if (voters.size() < 2) {
 
             sleeper.sendMessage(
                     PREFIX.append(

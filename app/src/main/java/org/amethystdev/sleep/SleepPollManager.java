@@ -20,11 +20,15 @@ package org.amethystdev.sleep;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.amethystdev.Main;
+import org.amethystdev.message.ActionBarFactory;
+import org.amethystdev.message.SleepBossBarFactory;
+import org.amethystdev.message.SleepMessageFactory;
 import org.amethystdev.model.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -32,19 +36,13 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public final class SleepPollManager {
 
-    private final Plugin plugin;
+    private final Main plugin;
 
     private final Map<String, Poll> polls =
             new HashMap<>();
@@ -56,7 +54,7 @@ public final class SleepPollManager {
             new HashMap<>();
 
     public SleepPollManager(
-            Plugin plugin
+            Main plugin
     ) {
 
         this.plugin = plugin;
@@ -93,10 +91,8 @@ public final class SleepPollManager {
                 new Poll(
                         worldName,
                         eligible,
-                        ((Main) plugin)
-                                .getPollDurationSeconds(),
-                        ((Main) plugin)
-                                .getRequiredPercentage()
+                        plugin.getPollDurationSeconds(),
+                        plugin.getRequiredPercentage()
                 );
 
         polls.put(
@@ -116,6 +112,28 @@ public final class SleepPollManager {
         return polls.get(worldName);
     }
 
+    private Set<Player> getOnlineEligiblePlayers(
+            Poll poll
+    ) {
+
+        Set<Player> players =
+                new LinkedHashSet<>();
+
+        for (UUID id :
+                poll.getEligible()) {
+
+            Player player =
+                    Bukkit.getPlayer(id);
+
+            if (player != null) {
+
+                players.add(player);
+            }
+        }
+
+        return players;
+    }
+
     private void startPollLifecycle(
             Poll poll
     ) {
@@ -125,136 +143,39 @@ public final class SleepPollManager {
             int needed =
                     poll.getNeededVotes();
 
-            for (UUID id : poll.getEligible()) {
+            for (Player p :
+                    getOnlineEligiblePlayers(
+                            poll
+                    )) {
 
-                Player p =
-                        Bukkit.getPlayer(id);
+                Component yesButton = SleepMessageFactory.createYesButton();
 
-                if (p == null)
-                    continue;
+                Component noButton = SleepMessageFactory.createNoButton();
 
-                Component yesButton =
-                        Component.text(
-                                "[✔ YES]",
-                                Style.style(
-                                        NamedTextColor.GREEN,
-                                        TextDecoration.BOLD
-                                )
-                        )
-                        .clickEvent(
-                                ClickEvent.runCommand(
-                                        "/sp yes"
-                                )
-                        )
-                        .hoverEvent(
-                                HoverEvent.showText(
-                                        Component.text(
-                                                "Vote YES",
-                                                NamedTextColor.GREEN
-                                        )
-                                )
-                        );
-
-                Component noButton =
-                        Component.text(
-                                "[✖ NO]",
-                                Style.style(
-                                        NamedTextColor.RED,
-                                        TextDecoration.BOLD
-                                )
-                        )
-                        .clickEvent(
-                                ClickEvent.runCommand(
-                                        "/sp no"
-                                )
-                        )
-                        .hoverEvent(
-                                HoverEvent.showText(
-                                        Component.text(
-                                                "Vote NO",
-                                                NamedTextColor.RED
-                                        )
-                                )
-                        );
+                p.sendMessage(SleepMessageFactory.createPollDivider());
 
                 p.sendMessage(
-                        Component.text(
-                                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-                                Style.style(
-                                        NamedTextColor.DARK_GRAY,
-                                        TextDecoration.STRIKETHROUGH
-                                )
-                        )
+                        SleepMessageFactory.createPrefix()
+                                .append(SleepMessageFactory.createPollStartedMessage())
                 );
 
                 p.sendMessage(
-                        Component.text(
-                                "[SleepPoll] ",
-                                Style.style(
-                                        NamedTextColor.GOLD,
-                                        TextDecoration.BOLD
-                                )
-                        ).append(
-                                Component.text(
-                                        "A player is sleeping!",
-                                        NamedTextColor.YELLOW
-                                )
-                        )
-                );
-
-                p.sendMessage(
-                        Component.text(
-                                "Vote within ",
-                                NamedTextColor.GRAY
-                        ).append(
-                                Component.text(
-                                        poll.getRemainingSeconds()
-                                                + " seconds",
-                                        NamedTextColor.AQUA
-                                )
-                        ).append(
-                                Component.text(
-                                        ": ",
-                                        NamedTextColor.GRAY
-                                )
-                        ).append(
-                                yesButton
-                        ).append(
-                                Component.text(
-                                        "   ",
-                                        NamedTextColor.DARK_GRAY
-                                )
-                        ).append(
+                        SleepMessageFactory.createPollVoteOptionsMessage(
+                                poll.getRemainingSeconds(),
+                                yesButton,
                                 noButton
                         )
                 );
 
                 p.sendMessage(
-                        Component.text(
-                                "Votes needed: ",
-                                NamedTextColor.GRAY
-                        ).append(
-                                Component.text(
-                                        String.valueOf(needed),
-                                        NamedTextColor.AQUA
-                                )
-                        ).append(
-                                Component.text(
-                                        "/",
-                                        NamedTextColor.GRAY
-                                )
-                        ).append(
-                                Component.text(
-                                        String.valueOf(
-                                                poll.getEligible().size()
-                                        ),
-                                        NamedTextColor.AQUA
-                                )
+                        SleepMessageFactory.createVotesNeededMessage(
+                                needed,
+                                poll.getEligibleCount()
                         )
                 );
+                p.sendMessage(SleepMessageFactory.createPollDivider());
 
-                if (((Main) plugin)
-                        .areSoundsEnabled()) {
+                if (plugin.areSoundsEnabled()) {
 
                     p.playSound(
                             p.getLocation(),
@@ -265,8 +186,7 @@ public final class SleepPollManager {
                 }
             }
 
-            if (((Main) plugin)
-                    .isBossBarEnabled()) {
+            if (plugin.isBossBarEnabled()) {
 
                 BossBar bossBar =
                         Bukkit.createBossBar(
@@ -275,16 +195,12 @@ public final class SleepPollManager {
                                 BarStyle.SOLID
                         );
 
-                for (UUID id : poll.getEligible()) {
+                for (Player p :
+                        getOnlineEligiblePlayers(
+                                poll
+                        )) {
 
-                    Player p =
-                            Bukkit.getPlayer(id);
-
-                    if (p == null)
-                        continue;
-
-                    if (((Main) plugin)
-                            .hasBossBarEnabled(p)) {
+                    if (plugin.hasBossBarEnabled(p)) {
 
                         bossBar.addPlayer(p);
                     }
@@ -322,17 +238,12 @@ public final class SleepPollManager {
                                             && poll.getRemainingSeconds()
                                             > 0) {
 
-                                        for (UUID id :
-                                                poll.getEligible()) {
+                                        for (Player p :
+                                                getOnlineEligiblePlayers(
+                                                        poll
+                                                )) {
 
-                                            Player p =
-                                                    Bukkit.getPlayer(id);
-
-                                            if (p == null)
-                                                continue;
-
-                                            if (((Main) plugin)
-                                                    .areSoundsEnabled()) {
+                                            if (plugin.areSoundsEnabled()) {
 
                                                 p.playSound(
                                                         p.getLocation(),
@@ -383,9 +294,7 @@ public final class SleepPollManager {
         );
 
         PlayerData data =
-                ((Main) plugin)
-                        .getPlayerDataRepository()
-                        .getOrCreatePlayer(
+                plugin.getPlayerDataRepository().getOrCreatePlayer(
                                 player.getUniqueId()
                         );
 
@@ -393,9 +302,7 @@ public final class SleepPollManager {
 
             data.incrementVotes();
 
-            ((Main) plugin)
-                    .getPlayerDataRepository()
-                    .savePlayer(data);
+            plugin.getPlayerDataRepository().savePlayer(data);
         }
 
         updateBossBar(poll);
@@ -403,30 +310,8 @@ public final class SleepPollManager {
         updateActionBars(poll);
 
         player.sendMessage(
-                Component.text(
-                        "[SleepPoll] ",
-                        Style.style(
-                                NamedTextColor.GOLD,
-                                TextDecoration.BOLD
-                        )
-                ).append(
-                        Component.text(
-                                "Vote recorded: ",
-                                NamedTextColor.GRAY
-                        )
-                ).append(
-                        Component.text(
-                                accept
-                                        ? "YES"
-                                        : "NO",
-                                Style.style(
-                                        accept
-                                                ? NamedTextColor.GREEN
-                                                : NamedTextColor.RED,
-                                        TextDecoration.BOLD
-                                )
-                        )
-                )
+                SleepMessageFactory.createPrefix()
+                        .append(SleepMessageFactory.createVoteRecordedMessage(accept))
         );
 
         if (poll.hasPassed()) {
@@ -486,9 +371,7 @@ public final class SleepPollManager {
                     poll.getYesVotes()) {
 
                 PlayerData data =
-                        ((Main) plugin)
-                                .getPlayerDataRepository()
-                                .getOrCreatePlayer(id);
+                        plugin.getPlayerDataRepository().getOrCreatePlayer(id);
 
                 if (data == null)
                     continue;
@@ -497,9 +380,7 @@ public final class SleepPollManager {
 
                 data.incrementNightsSkipped();
 
-                ((Main) plugin)
-                        .getPlayerDataRepository()
-                        .savePlayer(data);
+                plugin.getPlayerDataRepository().savePlayer(data);
             }
 
         } else {
@@ -508,18 +389,14 @@ public final class SleepPollManager {
                     poll.getYesVotes()) {
 
                 PlayerData data =
-                        ((Main) plugin)
-                                .getPlayerDataRepository()
-                                .getOrCreatePlayer(id);
+                        plugin.getPlayerDataRepository().getOrCreatePlayer(id);
 
                 if (data == null)
                     continue;
 
                 data.incrementFailedVotes();
 
-                ((Main) plugin)
-                        .getPlayerDataRepository()
-                        .savePlayer(data);
+                plugin.getPlayerDataRepository().savePlayer(data);
             }
         }
 
@@ -527,52 +404,19 @@ public final class SleepPollManager {
 
             Component msg =
                     succeeded
-                            ? Component.text(
-                            "Sleep poll succeeded! ",
-                            Style.style(
-                                    NamedTextColor.GREEN,
-                                    TextDecoration.BOLD
-                            )
-                    ).append(
-                            Component.text(
-                                    "Skipping to day...",
-                                    NamedTextColor.GRAY
-                            )
-                    )
-                            : Component.text(
-                            "Sleep poll ended. ",
-                            Style.style(
-                                    NamedTextColor.RED,
-                                    TextDecoration.BOLD
-                            )
-                    ).append(
-                            Component.text(
-                                    "Not enough yes votes.",
-                                    NamedTextColor.GRAY
-                            )
-                    );
+                            ? SleepMessageFactory.createPollSuccessMessage()
+                            : SleepMessageFactory.createPollFailedMessage();
 
-            for (UUID id :
-                    poll.getEligible()) {
-
-                Player p =
-                        Bukkit.getPlayer(id);
-
-                if (p == null)
-                    continue;
+            for (Player p :
+                    getOnlineEligiblePlayers(
+                            poll
+                    )) {
 
                 p.sendMessage(
-                        Component.text(
-                                "[SleepPoll] ",
-                                Style.style(
-                                        NamedTextColor.GOLD,
-                                        TextDecoration.BOLD
-                                )
-                        ).append(msg)
+                        SleepMessageFactory.createPrefix().append(msg)
                 );
 
-                if (((Main) plugin)
-                        .areSoundsEnabled()) {
+                if (plugin.areSoundsEnabled()) {
 
                     if (succeeded) {
 
@@ -597,13 +441,13 @@ public final class SleepPollManager {
 
             if (succeeded) {
 
-                if (Bukkit.getWorld(
+                var world = Bukkit.getWorld(
                         poll.getWorld()
-                ) != null) {
+                );
 
-                    Bukkit.getWorld(
-                            poll.getWorld()
-                    ).setTime(1000L);
+                if (world != null) {
+
+                    world.setTime(1000L);
                 }
             }
 
@@ -625,80 +469,21 @@ public final class SleepPollManager {
         if (bossBar == null)
             return;
 
-        bossBar.setTitle(
-                "§6🌙 Sleep Poll §8• §e"
-                        + poll.getRemainingSeconds()
-                        + "s §7remaining §8| §aYES "
-                        + poll.getYesVotes().size()
-                        + "/"
-                        + poll.getNeededVotes()
-        );
+        bossBar.setTitle(SleepBossBarFactory.createTitle(poll));
 
-        double progress =
-                poll.getRemainingSeconds()
-                        / (double) ((Main) plugin)
-                        .getPollDurationSeconds();
-
-        bossBar.setProgress(
-                Math.max(
-                        0.0,
-                        Math.min(
-                                1.0,
-                                progress
-                        )
-                )
-        );
+        bossBar.setProgress(SleepBossBarFactory.createProgress(poll));
     }
 
     private void updateActionBars(
             Poll poll
     ) {
 
-        Component actionBar =
-                Component.text(
-                        "🌙 Sleep Poll ",
-                        NamedTextColor.GOLD
-                ).append(
-                        Component.text(
-                                "• ",
-                                NamedTextColor.DARK_GRAY
-                        )
-                ).append(
-                        Component.text(
-                                "YES ",
-                                NamedTextColor.GREEN
-                        )
-                ).append(
-                        Component.text(
-                                poll.getYesVotes().size()
-                                        + "/"
-                                        + poll.getNeededVotes(),
-                                NamedTextColor.AQUA
-                        )
-                ).append(
-                        Component.text(
-                                " • ",
-                                NamedTextColor.DARK_GRAY
-                        )
-                ).append(
-                        Component.text(
-                                poll.getRemainingSeconds()
-                                        + "s",
-                                poll.getRemainingSeconds()
-                                        <= 5
-                                                ? NamedTextColor.RED
-                                                : NamedTextColor.YELLOW
-                        )
-                );
+        Component actionBar = ActionBarFactory.createPollActionBar(poll);
 
-        for (UUID id :
-                poll.getEligible()) {
-
-            Player p =
-                    Bukkit.getPlayer(id);
-
-            if (p == null)
-                continue;
+        for (Player p :
+                getOnlineEligiblePlayers(
+                        poll
+                )) {
 
             p.sendActionBar(actionBar);
         }

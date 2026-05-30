@@ -84,7 +84,7 @@ public final class MariaDBDatabaseManager
         int poolSize =
                 config.getInt(
                         "database.mariadb.pool-size",
-                        10
+                        5
                 );
 
         String jdbcUrl =
@@ -117,7 +117,7 @@ public final class MariaDBDatabaseManager
             );
 
             hikariConfig.setMinimumIdle(
-                    2
+                    1
             );
 
             hikariConfig.setPoolName(
@@ -149,11 +149,7 @@ public final class MariaDBDatabaseManager
             );
 
             hikariConfig.setLeakDetectionThreshold(
-                    15000
-            );
-
-            hikariConfig.setConnectionTestQuery(
-                    "SELECT 1"
+                    0
             );
 
             hikariConfig.setDriverClassName(
@@ -203,41 +199,43 @@ public final class MariaDBDatabaseManager
     }
 
     @Override
-    public Connection getConnection() {
+    public Connection getConnection()
+            throws SQLException {
 
-        try {
+        if (!isConnected()) {
+
+            connect();
+        }
+
+        if (!isConnected()) {
+
+            throw new SQLException(
+                    "MariaDB database is not connected."
+            );
+        }
+
+        Connection connection =
+                dataSource.getConnection();
+
+        if (!connection.isValid(5)) {
+
+            connection.close();
+
+            disconnect();
+
+            connect();
 
             if (!isConnected()) {
 
-                connect();
+                throw new SQLException(
+                        "Failed to reconnect to MariaDB."
+                );
             }
 
-            Connection connection =
-                    dataSource.getConnection();
-
-            if (!connection.isValid(5)) {
-
-                connection.close();
-
-                disconnect();
-
-                connect();
-
-                return dataSource.getConnection();
-            }
-
-            return connection;
-
-        } catch (SQLException e) {
-
-            plugin.getLogger().severe(
-                    "Failed to retrieve MariaDB connection."
-            );
-
-            e.printStackTrace();
+            return dataSource.getConnection();
         }
 
-        return null;
+        return connection;
     }
 
     @Override

@@ -22,19 +22,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.amethystdev.database.DatabaseExecutor;
 import org.amethystdev.database.DatabaseManager;
 import org.amethystdev.database.DatabaseRetry;
-
 import org.amethystdev.model.PlayerData;
 
 public final class PlayerDataRepository {
@@ -136,10 +133,6 @@ public final class PlayerDataRepository {
 
         ) {
 
-            if (connection == null) {
-                return null;
-            }
-
             statement.setQueryTimeout(10);
 
             statement.setString(
@@ -223,10 +216,6 @@ public final class PlayerDataRepository {
                             connection.prepareStatement(sql)
 
             ) {
-
-                if (connection == null) {
-                    return;
-                }
 
                 statement.setQueryTimeout(10);
 
@@ -315,10 +304,6 @@ public final class PlayerDataRepository {
 
                 ) {
 
-                    if (connection == null) {
-                        return;
-                    }
-
                     statement.setQueryTimeout(10);
 
                     statement.setInt(
@@ -395,9 +380,6 @@ public final class PlayerDataRepository {
 
         ) {
 
-            if (connection == null) {
-                return players;
-            }
 
             statement.setQueryTimeout(15);
 

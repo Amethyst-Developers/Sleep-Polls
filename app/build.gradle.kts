@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.amethystdev"
-version = "1.0.0"
+version = "2.0.0"
 
 repositories {
 

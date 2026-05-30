@@ -21,8 +21,6 @@
 #
 # ============================================================
 
-server-id: server-1
-
 # ------------------------------------------------------------
 # Poll Settings
 # ------------------------------------------------------------
@@ -122,14 +120,6 @@ database:
     username: root
     password: password
     pool-size: 10
-
-dragonfly:
-  enabled: false
-  host: localhost
-  port: 6379
-  password: ""
-  channel: sleeppolls
-
 
 # ============================================================
 # End of configuration

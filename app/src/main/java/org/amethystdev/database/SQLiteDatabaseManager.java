@@ -19,7 +19,6 @@
 package org.amethystdev.database;
 
 import java.io.File;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -90,37 +89,37 @@ public final class SQLiteDatabaseManager
                     "SleepPolls-SQLite"
             );
 
-            hikariConfig.setMaximumPoolSize(
-                    10
-            );
+			hikariConfig.setMaximumPoolSize(
+					2
+			);
 
-            hikariConfig.setMinimumIdle(
-                    1
-            );
+			hikariConfig.setMinimumIdle(
+					1
+			);
 
-            hikariConfig.setConnectionTimeout(
-                    10000
-            );
+			hikariConfig.setConnectionTimeout(
+					10000
+			);
 
-            hikariConfig.setValidationTimeout(
-                    5000
-            );
+			hikariConfig.setValidationTimeout(
+					5000
+			);
 
-            hikariConfig.setIdleTimeout(
-                    600000
-            );
+			hikariConfig.setIdleTimeout(
+					600000
+			);
 
-            hikariConfig.setMaxLifetime(
-                    1800000
-            );
+			hikariConfig.setMaxLifetime(
+					1800000
+			);
 
-            hikariConfig.setKeepaliveTime(
-                    30000
-            );
+			hikariConfig.setKeepaliveTime(
+					30000
+			);
 
-            hikariConfig.setLeakDetectionThreshold(
-                    15000
-            );
+			hikariConfig.setLeakDetectionThreshold(
+					0
+			);
 
             hikariConfig.setConnectionTestQuery(
                     "SELECT 1"
@@ -176,43 +175,45 @@ public final class SQLiteDatabaseManager
         );
     }
 
-    @Override
-    public Connection getConnection() {
+	@Override
+	public Connection getConnection()
+			throws SQLException {
 
-        try {
+		if (!isConnected()) {
 
-            if (!isConnected()) {
+			connect();
+		}
 
-                connect();
-            }
+		if (!isConnected()) {
 
-            Connection connection =
-                    dataSource.getConnection();
+			throw new SQLException(
+					"SQLite database is not connected."
+			);
+		}
 
-            if (!connection.isValid(5)) {
+		Connection connection =
+				dataSource.getConnection();
 
-                connection.close();
+		if (!connection.isValid(5)) {
 
-                disconnect();
+			connection.close();
 
-                connect();
+			disconnect();
 
-                return dataSource.getConnection();
-            }
+			connect();
 
-            return connection;
+			if (!isConnected()) {
 
-        } catch (SQLException e) {
+				throw new SQLException(
+						"Failed to reconnect to SQLite database."
+				);
+			}
 
-            plugin.getLogger().severe(
-                    "Failed to retrieve SQLite connection."
-            );
+			return dataSource.getConnection();
+		}
 
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+		return connection;
+	}
 
     @Override
     public boolean isConnected() {

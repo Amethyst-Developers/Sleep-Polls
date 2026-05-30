@@ -18,6 +18,7 @@
 
 package org.amethystdev.sleep;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -26,8 +27,7 @@ public final class Poll {
 
     private final String world;
 
-    private final Set<UUID> eligible =
-            new HashSet<>();
+    private final Set<UUID> eligible;
 
     private final Set<UUID> yesVotes =
             new HashSet<>();
@@ -39,6 +39,8 @@ public final class Poll {
 
     private PollState state =
             PollState.ACTIVE;
+
+    private final int durationSeconds;
 
     private int remainingSeconds;
 
@@ -53,9 +55,13 @@ public final class Poll {
 
         this.world = world;
 
-        this.eligible.addAll(
-                eligible
-        );
+        this.eligible =
+                Set.copyOf(
+                        eligible
+                );
+
+        this.durationSeconds =
+                durationSeconds;
 
         this.remainingSeconds =
                 durationSeconds;
@@ -129,17 +135,23 @@ public final class Poll {
 
     public Set<UUID> getEligible() {
 
-        return eligible;
+        return Collections.unmodifiableSet(
+                eligible
+        );
     }
 
     public Set<UUID> getYesVotes() {
 
-        return yesVotes;
+        return Collections.unmodifiableSet(
+                yesVotes
+        );
     }
 
     public Set<UUID> getNoVotes() {
 
-        return noVotes;
+        return Collections.unmodifiableSet(
+                noVotes
+        );
     }
 
     public long getCreatedAt() {
@@ -152,11 +164,16 @@ public final class Poll {
         return state;
     }
 
-    public void setState(
+    void setState(
             PollState state
     ) {
 
         this.state = state;
+    }
+
+    public int getDurationSeconds() {
+
+        return durationSeconds;
     }
 
     public int getRemainingSeconds() {
@@ -164,7 +181,7 @@ public final class Poll {
         return remainingSeconds;
     }
 
-    public void setRemainingSeconds(
+    void setRemainingSeconds(
             int remainingSeconds
     ) {
 
